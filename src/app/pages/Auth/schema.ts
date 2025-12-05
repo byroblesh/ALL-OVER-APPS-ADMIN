@@ -1,14 +1,17 @@
 import * as Yup from 'yup'
 
 export interface AuthFormValues {
-    username: string
+    email: string
     password: string
 }
 
 export const schema = Yup.object().shape({
-    username: Yup.string()
+    email: Yup.string()
         .trim()
-        .required('Product Title Required'),
-    password: Yup.string().trim()
-        .required('Product Title Required'),
+        .email('Please enter a valid email address')
+        .required('Email is required'),
+    password: Yup.string()
+        .trim()
+        .min(6, 'Password must be at least 6 characters')
+        .required('Password is required'),
 })

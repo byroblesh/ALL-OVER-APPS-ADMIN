@@ -2,10 +2,10 @@
 import { useEffect, useReducer, ReactNode } from "react";
 
 // Local Imports
-import axios from "@/utils/axios";
 import { isTokenValid, setSession } from "@/utils/jwt";
 import { AuthProvider as AuthContext, AuthContextType } from "./context";
 import { User } from "@/@types/user";
+import { authService } from "@/services";
 
 // ----------------------------------------------------------------------
 
@@ -87,8 +87,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (authToken && isTokenValid(authToken)) {
           setSession(authToken);
 
-          const response = await axios.get<{ user: User }>("/user/profile");
-          const { user } = response.data;
+          // Get user profile from API
+          const user = await authService.getProfile();
 
           dispatch({
             type: "INITIALIZE",
@@ -121,35 +121,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     init();
   }, []);
 
-  const login = async (credentials: { username: string; password: string }) => {
+  const login = async (credentials: { email: string; password: string }) => {
     dispatch({ type: "LOGIN_REQUEST" });
 
     try {
-      const response = await axios.post<{ authToken: string; user: User }>(
-        "/login",
-        credentials,
-      );
-      const { authToken, user } = response.data;
+      // Call auth service
+      const response = await authService.login(credentials);
 
-      if (
-        typeof authToken !== "string" ||
-        typeof user !== "object" ||
-        user === null
-      ) {
-        throw new Error("Response is not valid");
+      if (!response.success || !response.token || !response.user) {
+        throw new Error("Invalid response from server");
       }
 
-      setSession(authToken);
+      // Store token and set session
+      setSession(response.token);
+
+      // Transform API user to app User type
+      const user: User = {
+        id: response.user.id,
+        email: response.user.email,
+        name: response.user.name,
+        role: response.user.role,
+      };
 
       dispatch({
         type: "LOGIN_SUCCESS",
         payload: { user },
       });
-    } catch (err) {
+    } catch (err: any) {
       dispatch({
         type: "LOGIN_ERROR",
         payload: {
-          errorMessage: err instanceof Error ? err.message : "Login failed",
+          errorMessage: err?.error || err?.message || "Login failed",
         },
       });
     }
