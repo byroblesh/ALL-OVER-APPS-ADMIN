@@ -4,6 +4,10 @@
       "dashboards": "Dashboards",
       "home": "Home"
     },
+    "templates": {
+      "templates": "Templates",
+      "list": "Email Templates"
+    },
     "settings": {
       "settings": "Settings",
       "general": "General",

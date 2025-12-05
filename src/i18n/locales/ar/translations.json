@@ -4,6 +4,10 @@
       "dashboards": "لوحات التحكم",
       "home": "الرئيسية"
     },
+    "templates": {
+      "templates": "القوالب",
+      "list": "قوالب البريد الإلكتروني"
+    },
     "settings": {
       "settings": "الإعدادات",
       "general": "عام",

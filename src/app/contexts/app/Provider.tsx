@@ -57,12 +57,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
         } else {
           // If saved app not found, select first active app
           const firstActiveApp = fetchedApps.find((app) => app.isActive);
-          setCurrentAppState(firstActiveApp || fetchedApps[0]);
+          const appToSelect = firstActiveApp || fetchedApps[0];
+          setCurrentAppState(appToSelect);
+          // Save to localStorage
+          if (appToSelect) {
+            localStorage.setItem(STORAGE_KEY, appToSelect.id);
+          }
         }
       } else {
         // No saved app, select first active app
         const firstActiveApp = fetchedApps.find((app) => app.isActive);
-        setCurrentAppState(firstActiveApp || fetchedApps[0]);
+        const appToSelect = firstActiveApp || fetchedApps[0];
+        setCurrentAppState(appToSelect);
+        // Save to localStorage
+        if (appToSelect) {
+          localStorage.setItem(STORAGE_KEY, appToSelect.id);
+        }
       }
     } catch (error) {
       console.warn("Failed to load apps (endpoint may not exist yet):", error);

@@ -37,6 +37,12 @@ const protectedRoutes: RouteObject = {
             },
           ],
         },
+        {
+          path: "templates",
+          lazy: async () => ({
+            Component: (await import("@/app/pages/templates")).default,
+          }),
+        },
       ],
     },
     // The app layout supports only the main layout. Avoid using it for other layouts.
