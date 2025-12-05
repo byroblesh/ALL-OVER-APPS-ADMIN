@@ -1,5 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import axios from "./axios";
+import { User } from "@/@types/user";
 
 const isTokenValid = (authToken: string): boolean => {
   try {
@@ -17,16 +18,35 @@ const isTokenValid = (authToken: string): boolean => {
   }
 };
 
-const setSession = (authToken?: string | null): void => {
+const setSession = (authToken?: string | null, user?: User | null): void => {
   if (typeof authToken === "string" && authToken.trim() !== "") {
     // Store token in local storage and set authorization header for axios
     localStorage.setItem("authToken", authToken);
     axios.defaults.headers.common.Authorization = `Bearer ${authToken}`;
+
+    // Store user data if provided
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    }
   } else {
-    // Remove token from local storage and delete authorization header from axios
+    // Remove token and user from local storage and delete authorization header from axios
     localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
     delete axios.defaults.headers.common.Authorization;
   }
 };
 
-export { isTokenValid, setSession };
+const getStoredUser = (): User | null => {
+  try {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      return JSON.parse(storedUser);
+    }
+    return null;
+  } catch (err) {
+    console.error("Failed to parse stored user:", err);
+    return null;
+  }
+};
+
+export { isTokenValid, setSession, getStoredUser };

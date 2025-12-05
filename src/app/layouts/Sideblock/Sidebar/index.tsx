@@ -6,15 +6,18 @@ import { clsx } from "clsx";
 import { useBreakpointsContext } from "@/app/contexts/breakpoint/context";
 import { useSidebarContext } from "@/app/contexts/sidebar/context";
 import { useThemeContext } from "@/app/contexts/theme/context";
+import { useAppContext } from "@/app/contexts/app/context";
 import { useDidUpdate } from "@/hooks";
 import { Header } from "./Header";
 import { Menu } from "./Menu";
+import { AppSelector } from "@/components/shared/AppSelector";
 
 // ----------------------------------------------------------------------
 
 export function Sidebar() {
   const { cardSkin } = useThemeContext();
   const { name, lgAndDown } = useBreakpointsContext();
+  const { currentApp } = useAppContext();
 
   const { isExpanded: isSidebarExpanded, close: closeSidebar } =
     useSidebarContext();
@@ -39,6 +42,10 @@ export function Sidebar() {
         )}
       >
         <Header />
+        <AppSelector />
+        {currentApp && (
+          <div className="dark:bg-dark-500 mx-4 my-2 h-px bg-gray-200"></div>
+        )}
         <Menu />
       </div>
 

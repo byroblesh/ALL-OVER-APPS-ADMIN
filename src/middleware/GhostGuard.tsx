@@ -12,15 +12,16 @@ export default function GhostGuard() {
   const outlet = useOutlet();
   const { isAuthenticated } = useAuthContext();
 
-  const url = `${new URLSearchParams(window.location.search).get(
+  const redirectUrl = new URLSearchParams(window.location.search).get(
     REDIRECT_URL_KEY,
-  )}`;
+  );
 
   if (isAuthenticated) {
-    if (url && url !== "") {
-      return <Navigate to={url} />;
+    // Redirect to requested URL if it exists, otherwise go to home
+    if (redirectUrl && redirectUrl !== "null") {
+      return <Navigate to={redirectUrl} replace />;
     }
-    return <Navigate to={HOME_PATH} />;
+    return <Navigate to={HOME_PATH} replace />;
   }
 
   return <>{outlet}</>;

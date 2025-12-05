@@ -12,6 +12,7 @@ import { useThemeContext } from "@/app/contexts/theme/context";
 import { settings } from "@/app/navigation/segments/settings";
 import { NavigationTree } from "@/@types/navigation";
 import { SegmentPath } from "..";
+import { AppSelector } from "@/components/shared/AppSelector";
 
 // ----------------------------------------------------------------------
 

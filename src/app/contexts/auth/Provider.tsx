@@ -2,7 +2,7 @@
 import { useEffect, useReducer, ReactNode } from "react";
 
 // Local Imports
-import { isTokenValid, setSession } from "@/utils/jwt";
+import { isTokenValid, setSession, getStoredUser } from "@/utils/jwt";
 import { AuthProvider as AuthContext, AuthContextType } from "./context";
 import { User } from "@/@types/user";
 import { authService } from "@/services";
@@ -87,16 +87,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (authToken && isTokenValid(authToken)) {
           setSession(authToken);
 
-          // Get user profile from API
-          const user = await authService.getProfile();
+          // Get user from localStorage instead of API call
+          const user = getStoredUser();
 
-          dispatch({
-            type: "INITIALIZE",
-            payload: {
-              isAuthenticated: true,
-              user,
-            },
-          });
+          if (user) {
+            dispatch({
+              type: "INITIALIZE",
+              payload: {
+                isAuthenticated: true,
+                user,
+              },
+            });
+          } else {
+            // No user data stored, logout
+            dispatch({
+              type: "INITIALIZE",
+              payload: {
+                isAuthenticated: false,
+                user: null,
+              },
+            });
+          }
         } else {
           dispatch({
             type: "INITIALIZE",
@@ -132,9 +143,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error("Invalid response from server");
       }
 
-      // Store token and set session
-      setSession(response.token);
-
       // Transform API user to app User type
       const user: User = {
         id: response.user.id,
@@ -142,6 +150,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: response.user.name,
         role: response.user.role,
       };
+
+      // Store token and user in session (localStorage)
+      setSession(response.token, user);
 
       dispatch({
         type: "LOGIN_SUCCESS",

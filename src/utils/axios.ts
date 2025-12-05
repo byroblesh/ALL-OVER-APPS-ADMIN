@@ -10,13 +10,21 @@ const axiosInstance = axios.create({
   },
 });
 
-// Request interceptor - Add auth token to requests
+// Request interceptor - Add auth token and app ID to requests
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    // Add auth token
     const token = window.localStorage.getItem("authToken");
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // Add selected app ID
+    const selectedAppId = window.localStorage.getItem("selectedAppId");
+    if (selectedAppId && config.headers) {
+      config.headers["X-App-Id"] = selectedAppId;
+    }
+
     return config;
   },
   (error: AxiosError) => {
