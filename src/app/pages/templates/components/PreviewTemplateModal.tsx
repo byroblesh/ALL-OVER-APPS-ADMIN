@@ -66,7 +66,7 @@ export function PreviewTemplateModal({
       setPreviewText(preview.textContent);
       setPreviewSubject(preview.subject);
     } catch (error) {
-      console.error("Failed to load preview:", error);
+      // Error is handled by axios interceptor with toast notification
       // Fallback to basic preview without API
       setPreviewHtml(template.htmlTemplate);
       setPreviewText(template.textTemplate);

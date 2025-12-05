@@ -12,6 +12,7 @@ import {
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 // Local Imports
 import { Table, Card, THead, TBody, Th, Tr, Td } from "@/components/ui";
@@ -80,7 +81,7 @@ export default function Templates() {
         setTemplates(response.data);
       }
     } catch (error) {
-      console.error("Failed to load templates:", error);
+      // Error is handled by axios interceptor with toast notification
     } finally {
       setIsLoading(false);
     }
@@ -121,10 +122,14 @@ export default function Templates() {
     if (selectedTemplate) {
       try {
         await templateService.deleteTemplate(selectedTemplate._id);
+        toast.success("Template deleted successfully", {
+          position: "bottom-center",
+          duration: 3000,
+        });
         setIsDeleteModalOpen(false);
         await loadTemplates();
       } catch (error) {
-        console.error("Failed to delete template:", error);
+        // Error is handled by axios interceptor with toast notification
       }
     }
   };

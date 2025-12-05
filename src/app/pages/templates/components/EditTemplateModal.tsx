@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { EmailTemplate, TemplateFormData } from "@/@types/template";
 import { templateService } from "@/services";
 
@@ -19,6 +20,17 @@ export function EditTemplateModal({
 }: EditTemplateModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>("basic");
   const [isSaving, setIsSaving] = useState(false);
+
+  // Get the selected app ID for the shop field
+  const getShopId = () => {
+    // Use the template's shopId if editing, otherwise get from localStorage
+    if (template?.shopId) {
+      return template.shopId;
+    }
+    // Use the selected app ID as shop ID
+    return localStorage.getItem("selectedAppId") || undefined;
+  };
+
   const [formData, setFormData] = useState<TemplateFormData>({
     name: template?.name || "",
     slug: template?.name || "",
@@ -28,7 +40,7 @@ export function EditTemplateModal({
     textTemplate: template?.textTemplate || "",
     variables: template?.variables?.join(", ") || "",
     isActive: template?.isActive ?? true,
-    shop: undefined,
+    shop: getShopId(),
   });
 
   // Auto-generate slug from name
@@ -62,13 +74,21 @@ export function EditTemplateModal({
 
       if (isCreating) {
         await templateService.createTemplate(formData);
+        toast.success("Template created successfully", {
+          position: "bottom-center",
+          duration: 3000,
+        });
       } else if (template) {
         await templateService.updateTemplate(template._id, formData);
+        toast.success("Template updated successfully", {
+          position: "bottom-center",
+          duration: 3000,
+        });
       }
 
       onSave();
     } catch (error) {
-      console.error("Failed to save template:", error);
+      // Error is handled by axios interceptor with toast notification
     } finally {
       setIsSaving(false);
     }
