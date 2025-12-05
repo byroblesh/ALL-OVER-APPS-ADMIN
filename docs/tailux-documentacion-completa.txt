@@ -1,0 +1,476 @@
+================================================================================
+TAILUX - REACT TAILWIND ADMIN TEMPLATE
+DOCUMENTACIÓN COMPLETA
+================================================================================
+
+Fuente: https://tailux.piniastudio.com/docs/getting-started
+Template: https://themeforest.net/item/tailux-react-tailwind-admin-template/56397379
+Demo: https://tailux-landing.vercel.app/
+
+================================================================================
+1. DESCRIPCIÓN GENERAL
+================================================================================
+
+Tailux es un template de dashboard/admin panel de última generación construido 
+con React 19 y Tailwind CSS v4. Está diseñado para desarrolladores que buscan 
+eficiencia, flexibilidad y estética.
+
+CARACTERÍSTICAS PRINCIPALES:
+- React 19 - Última versión de React
+- Tailwind CSS v4 - Framework CSS utility-first
+- TypeScript y JavaScript - Incluye ambas ediciones
+- Dark & Light Mode - Temas claro y oscuro
+- Multi-color schemes - Múltiples esquemas de colores
+- Monochrome mode - Modo monocromático
+- Ultra-responsive - Diseño adaptable a todos los dispositivos
+- Arquitectura modular - Fácil de escalar y mantener
+- Dependencias ligeras - Rendimiento rápido
+
+================================================================================
+2. TECNOLOGÍAS CORE
+================================================================================
+
+LIBRERÍAS PRINCIPALES:
+
+┌─────────────────────┬────────────────────────────────────────────────────────┐
+│ Tecnología          │ Descripción                                            │
+├─────────────────────┼────────────────────────────────────────────────────────┤
+│ React 19            │ Librería para construir interfaces de usuario          │
+│                     │ dinámicas e interactivas con componentes reutilizables │
+├─────────────────────┼────────────────────────────────────────────────────────┤
+│ Tailwind CSS v4     │ Framework CSS utility-first para crear diseños         │
+│                     │ responsivos y personalizables rápidamente              │
+├─────────────────────┼────────────────────────────────────────────────────────┤
+│ Headless UI         │ Componentes UI accesibles y sin estilos, diseñados     │
+│                     │ para funcionar con Tailwind CSS                        │
+├─────────────────────┼────────────────────────────────────────────────────────┤
+│ Vite                │ Herramienta de build rápida con experiencia de         │
+│                     │ desarrollo optimizada para proyectos web modernos      │
+├─────────────────────┼────────────────────────────────────────────────────────┤
+│ React Router        │ Solución flexible para gestionar routing y             │
+│                     │ navegación en aplicaciones React                       │
+├─────────────────────┼────────────────────────────────────────────────────────┤
+│ TanStack Table      │ Librería para crear data tables con alto rendimiento   │
+│                     │ y altamente personalizables                            │
+├─────────────────────┼────────────────────────────────────────────────────────┤
+│ React Hook Form     │ Librería ligera para construir formularios flexibles   │
+│                     │ y con alto rendimiento                                 │
+├─────────────────────┼────────────────────────────────────────────────────────┤
+│ Yup                 │ Librería de validación de esquemas para validar y      │
+│                     │ transformar objetos fácilmente                         │
+├─────────────────────┼────────────────────────────────────────────────────────┤
+│ i18next             │ Soporte multi-idioma para LTR y RTL                    │
+└─────────────────────┴────────────────────────────────────────────────────────┘
+
+================================================================================
+3. INSTALACIÓN
+================================================================================
+
+REQUISITOS PREVIOS:
+- Node.js (versión 18 o superior recomendada)
+- npm o Yarn instalado
+- Editor de código (VS Code recomendado)
+
+PASOS DE INSTALACIÓN:
+
+Paso 1: Descargar el código fuente
+----------------------------------
+Descarga el archivo ZIP de Tailux desde ThemeForest y extráelo.
+
+Paso 2: Abrir en tu editor de código
+------------------------------------
+Abre la carpeta del proyecto en tu editor de código preferido.
+
+Paso 3: Instalar dependencias
+-----------------------------
+Ejecuta uno de los siguientes comandos en la terminal:
+
+    # Usando Yarn (recomendado)
+    yarn install
+
+    # Usando npm
+    npm install
+
+    # Si hay problemas con peer dependencies
+    npm install --legacy-peer-deps
+
+Paso 4: Iniciar servidor de desarrollo
+--------------------------------------
+    # Usando Yarn
+    yarn dev
+
+    # Usando npm
+    npm run dev
+
+    # O también
+    npm start
+
+El servidor se iniciará y podrás acceder a la aplicación en:
+http://localhost:5173 (puerto por defecto de Vite)
+
+Paso 5: Build para producción
+-----------------------------
+Para generar los assets optimizados para producción:
+
+    # Usando Yarn
+    yarn build
+
+    # Usando npm
+    npm run build
+
+Los archivos se generarán en la carpeta /dist
+
+================================================================================
+4. ESTRUCTURA DEL PROYECTO
+================================================================================
+
+tailux/
+├── public/                    # Assets estáticos
+├── src/
+│   ├── assets/               # Imágenes, iconos, fuentes
+│   ├── components/           # Componentes reutilizables
+│   │   ├── ui/              # Componentes base de UI
+│   │   ├── charts/          # Componentes de gráficos
+│   │   ├── forms/           # Componentes de formularios
+│   │   ├── tables/          # Componentes de tablas
+│   │   └── widgets/         # Widgets del dashboard
+│   ├── contexts/            # Contextos de React
+│   ├── hooks/               # Hooks personalizados
+│   ├── layouts/             # Layouts de la aplicación
+│   ├── pages/               # Páginas/Vistas
+│   │   ├── dashboards/      # Diferentes dashboards
+│   │   ├── apps/            # Aplicaciones integradas
+│   │   ├── auth/            # Páginas de autenticación
+│   │   └── ...              # Otras páginas
+│   ├── routes/              # Configuración de rutas
+│   ├── styles/              # Estilos globales
+│   ├── utils/               # Utilidades y helpers
+│   ├── App.tsx              # Componente principal
+│   └── main.tsx             # Entry point
+├── .env                      # Variables de entorno
+├── index.html               # HTML principal
+├── package.json             # Dependencias
+├── tailwind.config.js       # Configuración de Tailwind
+├── tsconfig.json            # Configuración TypeScript
+└── vite.config.ts           # Configuración de Vite
+
+================================================================================
+5. CONTENIDO INCLUIDO
+================================================================================
+
+A) DASHBOARDS (20+ variaciones)
+-------------------------------
+- Sales Dashboard - Análisis de rendimiento de ventas
+- CRM Analytics - Métricas de relación con clientes
+- Orders Dashboard - Seguimiento y gestión de pedidos
+- Cryptocurrency V1 & V2 - Monitoreo de criptomonedas
+- Banking V1 & V2 - Dashboard financiero/bancario
+- Personal Dashboard - Analíticas personales
+- CMS Analytics - Estadísticas de sistema de gestión de contenido
+- Influencer Dashboard - Métricas para influencers
+- Travel Dashboard - Analíticas de viajes
+- Teacher Dashboard - Panel para educadores
+- Education Dashboard - Análisis educativo
+- Authors Dashboard - Métricas de autores
+- Doctor Dashboard - Analíticas médicas
+- Employees Dashboard - Rendimiento de empleados
+- Workspaces Dashboard - Insights de espacios de trabajo
+- Meetings Dashboard - Estadísticas de reuniones
+- Projects Board - Gestión de proyectos
+- Widget UI - Widgets personalizables
+- Widget Contact - Widgets de contacto
+
+B) APLICACIONES PREBUILT (10+)
+------------------------------
+- Kanban Board - Gestión de tareas estilo Kanban
+- To-Do List - Lista de tareas
+- Chat App - Aplicación de mensajería
+- AI Chat - Chat con inteligencia artificial
+- Mail/Email - Cliente de correo
+- Calendar - Calendario
+- File Manager - Gestor de archivos
+- Invoice - Gestión de facturas
+- Notes - Aplicación de notas
+
+C) PÁGINAS Y PROTOTIPOS (40+)
+-----------------------------
+- Authentication Pages (Login, Register, Forgot Password, Reset Password)
+- User Profile Pages
+- Settings Pages
+- Blog Pages
+- FAQ Pages
+- Pricing Pages
+- Error Pages (404, 500, etc.)
+- Help Center
+- Landing Pages
+- Coming Soon
+- Maintenance
+
+D) DATA TABLES (20+)
+-------------------
+- Orders Table
+- Projects Table
+- Subscriptions Table
+- Users Table
+- Products Table
+- Transactions Table
+- Con filtrado avanzado y opciones de personalización
+
+E) FORMULARIOS (10+)
+-------------------
+- Form Wizards (eKYC, Add Product, New Post)
+- Form Validation
+- Form Elements
+- Form Layouts
+
+F) COMPONENTES (1000+)
+----------------------
+- Buttons
+- Cards
+- Modals
+- Alerts
+- Notifications
+- Badges
+- Tabs
+- Accordions
+- Dropdowns
+- Tooltips
+- Progress Bars
+- Avatars
+- Charts (múltiples tipos)
+- Y muchos más...
+
+================================================================================
+6. PERSONALIZACIÓN
+================================================================================
+
+A) TEMAS Y COLORES
+------------------
+Tailux permite personalizar fácilmente:
+- Esquemas de colores
+- Color primario
+- Skins de cards (bordered, shadowed)
+- Modo tema (Dark/Light)
+
+Configuración en tailwind.config.js:
+
+    module.exports = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#...',
+              100: '#...',
+              // ... hasta 900
+            },
+          },
+        },
+      },
+      darkMode: 'class', // o 'media'
+    }
+
+B) LAYOUTS
+----------
+Opciones de layout disponibles:
+- Sidebar colapsable
+- Header fijo o scroll
+- Cards con bordes o sombras
+- Layouts con/sin footer
+
+C) IDIOMAS (i18n)
+-----------------
+Soporte para:
+- LTR (Left-to-Right) - Idiomas occidentales
+- RTL (Right-to-Left) - Árabe, Hebreo, etc.
+
+Usando i18next para traducciones.
+
+================================================================================
+7. HOOKS Y UTILIDADES (100+)
+================================================================================
+
+React hooks personalizados incluidos para:
+- Gestión de estado
+- Efectos secundarios
+- Formularios
+- Navegación
+- Tema/Dark mode
+- Responsive design
+- LocalStorage
+- API calls
+- Y más...
+
+================================================================================
+8. SOLUCIÓN DE PROBLEMAS
+================================================================================
+
+PROBLEMA: Errores de build
+--------------------------
+Solución: Asegúrate de usar la versión recomendada de Node.js y verifica 
+la configuración de Tailwind.
+
+PROBLEMA: Problemas de routing
+------------------------------
+Solución: Verifica la compatibilidad de versión de React Router DOM.
+
+PROBLEMA: Dark mode no cambia
+-----------------------------
+Solución: Verifica la configuración de darkMode en tailwind.config.js
+
+PROBLEMA: Errores de validación de formularios
+----------------------------------------------
+Solución: Usa librerías como Formik o React Hook Form para mejor manejo.
+
+PROBLEMA: Rendimiento lento en modo desarrollo
+----------------------------------------------
+Solución: Usa lazy loading para componentes pesados.
+
+PROBLEMA: Errores de peer dependencies
+--------------------------------------
+Solución: Usa el flag --legacy-peer-deps al instalar:
+    npm install --legacy-peer-deps
+
+================================================================================
+9. SCRIPTS DISPONIBLES
+================================================================================
+
+package.json scripts:
+
+    {
+      "scripts": {
+        "dev": "vite",              // Inicia servidor de desarrollo
+        "build": "vite build",      // Genera build de producción
+        "preview": "vite preview",  // Previsualiza build de producción
+        "lint": "eslint .",         // Ejecuta linter
+        "format": "prettier --write ."  // Formatea código
+      }
+    }
+
+================================================================================
+10. VARIABLES DE ENTORNO
+================================================================================
+
+Crea un archivo .env en la raíz del proyecto:
+
+    # API URL
+    VITE_API_URL=http://localhost:3001/api
+
+    # Otras configuraciones
+    VITE_APP_NAME=My App
+    VITE_APP_VERSION=1.0.0
+
+Acceso en el código:
+    const apiUrl = import.meta.env.VITE_API_URL;
+
+================================================================================
+11. INTEGRACIÓN CON BACKEND
+================================================================================
+
+Para integrar con tu API (como el backoffice-api creado anteriormente):
+
+1. Configura la URL base en .env:
+   VITE_API_URL=http://localhost:3001/api
+
+2. Crea un cliente API:
+
+    // src/lib/api.ts
+    const API_URL = import.meta.env.VITE_API_URL;
+
+    export async function fetchApi(endpoint: string, options?: RequestInit) {
+      const response = await fetch(`${API_URL}${endpoint}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options?.headers,
+        },
+      });
+      return response.json();
+    }
+
+3. Usa React Query o SWR para data fetching:
+
+    import { useQuery } from '@tanstack/react-query';
+
+    function useDashboard(appId: string) {
+      return useQuery({
+        queryKey: ['dashboard', appId],
+        queryFn: () => fetchApi(`/${appId}/metrics/dashboard`),
+      });
+    }
+
+================================================================================
+12. DEPLOYMENT
+================================================================================
+
+A) VERCEL
+---------
+1. Push tu código a GitHub/GitLab
+2. Importa el proyecto en Vercel
+3. Configura variables de entorno
+4. Deploy automático
+
+B) NETLIFY
+----------
+1. Push tu código a GitHub/GitLab
+2. Conecta con Netlify
+3. Build command: yarn build
+4. Publish directory: dist
+
+C) SERVIDOR PROPIO
+------------------
+1. Ejecuta: yarn build
+2. Copia contenido de /dist a tu servidor
+3. Configura nginx/apache para SPA
+
+Ejemplo nginx:
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+================================================================================
+13. CASOS DE USO
+================================================================================
+
+Tailux es ideal para:
+
+- Sales Dashboards - Seguimiento de ingresos y métricas de ventas
+- Analytics Platforms - Visualización de datos con gráficos
+- Crypto Interfaces - Gestión de portafolios de criptomonedas
+- Educational Tools - Dashboards LMS para gestión de cursos
+- CRM Systems - Gestión de relaciones con clientes
+- SaaS Platforms - Paneles de administración de aplicaciones SaaS
+- Project Management - Tableros Kanban y gestión de proyectos
+- Healthcare Dashboards - Analíticas médicas
+- E-commerce Admin - Gestión de tiendas online
+- HR Management - Dashboards de recursos humanos
+
+================================================================================
+14. SOPORTE Y RECURSOS
+================================================================================
+
+- Documentación: https://tailux.piniastudio.com/docs
+- Demo: https://tailux-landing.vercel.app/
+- Compra: https://themeforest.net/item/tailux-react-tailwind-admin-template/56397379
+- Soporte: A través de ThemeForest (tickets de soporte)
+
+================================================================================
+15. COMANDOS RÁPIDOS
+================================================================================
+
+# Instalación
+yarn install                    # Instalar dependencias
+
+# Desarrollo  
+yarn dev                        # Iniciar servidor de desarrollo
+
+# Producción
+yarn build                      # Generar build optimizado
+yarn preview                    # Previsualizar build
+
+# Linting y formato
+yarn lint                       # Verificar código
+yarn format                     # Formatear código
+
+================================================================================
+FIN DE LA DOCUMENTACIÓN
+================================================================================
