@@ -1,13 +1,45 @@
-import { Page } from "@/components/shared/Page";
+// Import Dependencies
+import {
+  flexRender,
+  getCoreRowModel,
+  getFacetedMinMaxValues,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
+import clsx from "clsx";
 import { useState, useEffect } from "react";
+
+// Local Imports
+import { Table, Card, THead, TBody, Th, Tr, Td } from "@/components/ui";
+import { TableSortIcon } from "@/components/shared/table/TableSortIcon";
+import { Page } from "@/components/shared/Page";
+import { useLockScrollbar, useDidUpdate, useLocalStorage } from "@/hooks";
+import { fuzzyFilter } from "@/utils/react-table/fuzzyFilter";
+import { useSkipper } from "@/utils/react-table/useSkipper";
+import { PaginationSection } from "@/components/shared/table/PaginationSection";
+import { SelectedRowsActions } from "@/components/shared/table/SelectedRowsActions";
+import { useThemeContext } from "@/app/contexts/theme/context";
+import { getUserAgentBrowser } from "@/utils/dom/getUserAgentBrowser";
+import { TableSettings } from "@/components/shared/table/TableSettings";
 import { EmailTemplate } from "@/@types/template";
 import { templateService } from "@/services";
-import { TemplateTable } from "./components/TemplateTable";
 import { EditTemplateModal } from "./components/EditTemplateModal";
 import { PreviewTemplateModal } from "./components/PreviewTemplateModal";
 import { DeleteConfirmModal } from "./components/DeleteConfirmModal";
+import { Toolbar } from "./datatable/Toolbar";
+import { columns } from "./datatable/columns";
+
+// ----------------------------------------------------------------------
+
+const isSafari = getUserAgentBrowser() === "Safari";
 
 export default function Templates() {
+  const { cardSkin } = useThemeContext();
+
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
@@ -16,25 +48,36 @@ export default function Templates() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
+  const [tableSettings, setTableSettings] = useState<TableSettings>({
+    enableFullScreen: false,
+    enableRowDense: false,
+  });
+
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const [columnVisibility, setColumnVisibility] = useLocalStorage(
+    "column-visibility-templates",
+    {},
+  );
+
+  const [columnPinning, setColumnPinning] = useLocalStorage(
+    "column-pinning-templates",
+    {},
+  );
+
+  const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
 
   const loadTemplates = async () => {
     try {
       setIsLoading(true);
       const response = await templateService.getTemplates({
-        page: currentPage,
-        limit: 20,
+        page: 1,
+        limit: 100, // Load more templates for client-side pagination
       });
 
       if (response.success) {
         setTemplates(response.data);
-        if (response.pagination) {
-          setTotalPages(response.pagination.totalPages);
-          setTotal(response.pagination.total);
-        }
       }
     } catch (error) {
       console.error("Failed to load templates:", error);
@@ -45,8 +88,7 @@ export default function Templates() {
 
   useEffect(() => {
     loadTemplates();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
+  }, []);
 
   const handleCreateTemplate = () => {
     setSelectedTemplate(null);
@@ -87,63 +129,205 @@ export default function Templates() {
     }
   };
 
-  return (
-    <Page title="Email Templates">
-      <div className="transition-content w-full px-(--margin-x) pt-5 lg:pt-6">
-        <div className="min-w-0 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="truncate text-xl font-medium tracking-wide text-gray-800 dark:text-dark-50">
-                Email Templates
-              </h2>
-              <p className="mt-1 text-sm text-gray-600 dark:text-dark-300">
-                Manage email templates used throughout the application. Changes take effect immediately.
-              </p>
-            </div>
-            <button
-              onClick={handleCreateTemplate}
-              className="inline-flex items-center gap-2 rounded-lg bg-gray-900 dark:bg-dark-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:hover:bg-dark-700 transition-colors"
-            >
-              <span className="text-lg">+</span>
-              Create Template
-            </button>
+  const table = useReactTable({
+    data: templates,
+    columns: columns,
+    state: {
+      globalFilter,
+      sorting,
+      columnVisibility,
+      columnPinning,
+      tableSettings,
+    },
+    meta: {
+      onEdit: handleEditTemplate,
+      onPreview: handlePreviewTemplate,
+      onDelete: handleDeleteTemplate,
+      onCreateTemplate: handleCreateTemplate,
+      setTableSettings,
+    },
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
+    enableSorting: tableSettings.enableSorting,
+    enableColumnFilters: tableSettings.enableColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
+    getFilteredRowModel: getFilteredRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getFacetedMinMaxValues: getFacetedMinMaxValues(),
+    globalFilterFn: fuzzyFilter,
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onColumnPinningChange: setColumnPinning,
+    autoResetPageIndex,
+  });
+
+  useDidUpdate(() => table.resetRowSelection(), [templates]);
+
+  useLockScrollbar(tableSettings.enableFullScreen);
+
+  if (isLoading) {
+    return (
+      <Page title="Email Templates">
+        <div className="transition-content w-full px-(--margin-x) pt-5 lg:pt-6">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-dark-50"></div>
           </div>
         </div>
+      </Page>
+    );
+  }
 
-        <TemplateTable
-          templates={templates}
-          isLoading={isLoading}
-          onEdit={handleEditTemplate}
-          onPreview={handlePreviewTemplate}
-          onDelete={handleDeleteTemplate}
-        />
-
-        {totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between border-t border-gray-200 dark:border-dark-700 pt-4">
-            <p className="text-sm text-gray-600 dark:text-dark-300">
-              {total} templates total
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-1 text-sm rounded-md bg-gray-100 dark:bg-dark-800 text-gray-700 dark:text-dark-200 hover:bg-gray-200 dark:hover:bg-dark-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-              <span className="px-3 py-1 text-sm text-gray-700 dark:text-dark-200">
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm rounded-md bg-gray-100 dark:bg-dark-800 text-gray-700 dark:text-dark-200 hover:bg-gray-200 dark:hover:bg-dark-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            </div>
+  return (
+    <Page title="Email Templates">
+      <div className="transition-content w-full pb-5">
+        <div
+          className={clsx(
+            "flex h-full w-full flex-col",
+            tableSettings.enableFullScreen &&
+              "dark:bg-dark-900 fixed inset-0 z-61 bg-white pt-3",
+          )}
+        >
+          <Toolbar table={table} />
+          <div
+            className={clsx(
+              "transition-content flex grow flex-col pt-3",
+              tableSettings.enableFullScreen
+                ? "overflow-hidden"
+                : "px-(--margin-x)",
+            )}
+          >
+            <Card
+              className={clsx(
+                "relative flex grow flex-col",
+                tableSettings.enableFullScreen && "overflow-hidden",
+              )}
+            >
+              <div className="table-wrapper min-w-full grow overflow-x-auto">
+                <Table
+                  hoverable
+                  dense={tableSettings.enableRowDense}
+                  sticky={tableSettings.enableFullScreen}
+                  className="w-full text-left rtl:text-right"
+                >
+                  <THead>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <Tr key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                          <Th
+                            key={header.id}
+                            className={clsx(
+                              "dark:bg-dark-800 dark:text-dark-100 bg-gray-200 font-semibold text-gray-800 uppercase first:ltr:rounded-tl-lg last:ltr:rounded-tr-lg first:rtl:rounded-tr-lg last:rtl:rounded-tl-lg",
+                              header.column.getCanPin() && [
+                                header.column.getIsPinned() === "left" &&
+                                  "sticky z-2 ltr:left-0 rtl:right-0",
+                                header.column.getIsPinned() === "right" &&
+                                  "sticky z-2 ltr:right-0 rtl:left-0",
+                              ],
+                            )}
+                          >
+                            {header.column.getCanSort() ? (
+                              <div
+                                className="flex cursor-pointer items-center space-x-3 select-none"
+                                onClick={header.column.getToggleSortingHandler()}
+                              >
+                                <span className="flex-1">
+                                  {header.isPlaceholder
+                                    ? null
+                                    : flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext(),
+                                      )}
+                                </span>
+                                <TableSortIcon
+                                  sorted={header.column.getIsSorted()}
+                                />
+                              </div>
+                            ) : header.isPlaceholder ? null : (
+                              flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )
+                            )}
+                          </Th>
+                        ))}
+                      </Tr>
+                    ))}
+                  </THead>
+                  <TBody>
+                    {table.getRowModel().rows.map((row) => {
+                      return (
+                        <Tr
+                          key={row.id}
+                          className={clsx(
+                            "dark:border-b-dark-500 relative border-y border-transparent border-b-gray-200",
+                            row.getIsSelected() &&
+                              !isSafari &&
+                              "row-selected after:bg-primary-500/10 ltr:after:border-l-primary-500 rtl:after:border-r-primary-500 after:pointer-events-none after:absolute after:inset-0 after:z-2 after:h-full after:w-full after:border-3 after:border-transparent",
+                          )}
+                        >
+                          {row.getVisibleCells().map((cell) => {
+                            return (
+                              <Td
+                                key={cell.id}
+                                className={clsx(
+                                  "relative bg-white",
+                                  cardSkin === "shadow"
+                                    ? "dark:bg-dark-700"
+                                    : "dark:bg-dark-900",
+                                  cell.column.getCanPin() && [
+                                    cell.column.getIsPinned() === "left" &&
+                                      "sticky z-2 ltr:left-0 rtl:right-0",
+                                    cell.column.getIsPinned() === "right" &&
+                                      "sticky z-2 ltr:right-0 rtl:left-0",
+                                  ],
+                                )}
+                              >
+                                {cell.column.getIsPinned() && (
+                                  <div
+                                    className={clsx(
+                                      "dark:border-dark-500 pointer-events-none absolute inset-0 border-gray-200",
+                                      cell.column.getIsPinned() === "left"
+                                        ? "ltr:border-r rtl:border-l"
+                                        : "ltr:border-l rtl:border-r",
+                                    )}
+                                  ></div>
+                                )}
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext(),
+                                )}
+                              </Td>
+                            );
+                          })}
+                        </Tr>
+                      );
+                    })}
+                  </TBody>
+                </Table>
+              </div>
+              <SelectedRowsActions table={table} />
+              {table.getCoreRowModel().rows.length > 0 && (
+                <div
+                  className={clsx(
+                    "px-4 pb-4 sm:px-5 sm:pt-4",
+                    tableSettings.enableFullScreen &&
+                      "dark:bg-dark-800 bg-gray-50",
+                    !(
+                      table.getIsSomeRowsSelected() ||
+                      table.getIsAllRowsSelected()
+                    ) && "pt-4",
+                  )}
+                >
+                  <PaginationSection table={table} />
+                </div>
+              )}
+            </Card>
           </div>
-        )}
+        </div>
       </div>
 
       {isEditModalOpen && (

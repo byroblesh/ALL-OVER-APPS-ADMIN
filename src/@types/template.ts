@@ -15,12 +15,14 @@ export interface EmailTemplate {
 
 export interface TemplateFormData {
   name: string;
+  slug: string;
   language: string;
   subject: string;
   htmlTemplate: string;
   textTemplate: string;
   variables: string;
   isActive: boolean;
+  shop?: string;
 }
 
 export interface TemplatePreviewData {
